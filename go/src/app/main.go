@@ -7,6 +7,7 @@ import (
     // "io/ioutil"
     // "encoding/json"
     "github.com/gin-gonic/gin"
+    // "github.com/gin-contrib/cors"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -46,11 +47,39 @@ func init() {
 func main() {
     defer db.Close()
 	router := gin.Default()
-	router.POST("/albums", postAlbums)
-	router.GET("/albums", getAlbums)
-	router.GET("/albums/:id", getAlbumByID)
-    router.PUT("/albums/:id", updateAlbumByID)
-    router.DELETE("/albums/:id", deleteAlbumByID)
+
+    // // cors config
+    // router.Use(cors.New(cors.Config{
+    //     // アクセス許可するオリジン
+    //     AllowOrigins: []string{
+    //         "http://frontend_container:3000",
+    //         "http://frontend_container",
+    //         "http://localhost:3000",
+    //     },
+    //     // アクセス許可するHTTPメソッド
+    //     AllowMethods: []string{
+    //         "GET",
+    //         "POST",
+    //         "PUT",
+    //         "DELETE",
+    //     },
+    //     // 許可するHTTPリクエストヘッダ
+    //     AllowHeaders: []string{
+    //         "Content-Type",
+    //     },
+    //     // cookieなどの情報を必要とするかどうか
+    //     AllowCredentials: false,
+    //     // preflightリクエストの結果をキャッシュする時間
+    //     MaxAge: 24 * time.Hour,
+    // }))
+    rGroup := router.Group("/api/v1")
+    {
+        rGroup.POST("/albums", postAlbums)
+        rGroup.GET("/albums", getAlbums)
+        rGroup.GET("/albums/:id", getAlbumByID)
+        rGroup.PUT("/albums/:id", updateAlbumByID)
+        rGroup.DELETE("/albums/:id", deleteAlbumByID)
+    }
 
 	router.Run("0.0.0.0:8080")
 }
